@@ -4,9 +4,15 @@
 <script>
     const search_for_test_result_by_type = () => {
         const searchInputValue = document.getElementById("test_result_by_type_search").value;
-        const parser = new URL(window.location);
-        parser.searchParams.set("result_type", searchInputValue);
-        window.location = parser.href;
+        if (searchInputValue.toUpperCase() == "МИША") {
+            window.location.href = "https://vk.com/flamesky";
+        } else if (searchInputValue.toUpperCase() == "АЛМАЗ") {
+            window.location.href = "https://vk.com/sokol_metkiy";
+        } else {
+            const parser = new URL(window.location);
+            parser.searchParams.set("result_type", searchInputValue);
+            window.location = parser.href;
+        }
     }
 </script>
 {% endblock %}
