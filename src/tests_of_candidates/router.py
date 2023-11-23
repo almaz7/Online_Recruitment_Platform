@@ -19,11 +19,8 @@ router = APIRouter(
 )
 
 
-@router.get("/result/{user_id}")
-async def get_candidate_test_result_by_type(result_type: str, user_id: int, user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
-    if user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="У Вас нет прав для просмотра чужих результатов")
-
+@router.get("/result/")
+async def get_candidate_test_result_by_type(result_type: str = 'AIZENKA', user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
     query = (
         select(test_candidate).
         where(and_(test_candidate.c.result_type == result_type,
@@ -36,7 +33,6 @@ async def get_candidate_test_result_by_type(result_type: str, user_id: int, user
         "data": result,
         "details": None
     }
-
 
 
 @router.post("/result")

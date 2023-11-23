@@ -8,6 +8,7 @@ from fastapi_users.router.common import ErrorCode
 from auth.manager import get_user_manager
 from auth.base_config import auth_backend
 router = APIRouter()
+#не используется, берется из дефолтный документации
 @router.post(
     "/login",
     tags=["user_login"],

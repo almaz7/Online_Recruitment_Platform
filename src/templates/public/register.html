@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport"
+          content="width=window-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}"/>
+    <title>Online Recruitment Platform</title>
+</head>
+<body style="background: #002F55">
+    <nav class="flex justify-between text-3xl my-3">
+        <ul class="flex ml-10">
+            <li><font color="red">Online Recruitment Platform</font></li>
+        </ul>
+    </nav>
+    <hr>
+    <div id="content">
+        <div class="flex justify-center flex-col items-center">
+            <div class="flex my-3 gap-15">
+                <form id="form" style="margin-top: 100px">
+                    <div>
+                        <font color="white" class="text-3xl">Впервые на нашей платформе?</font>
+                    </div>
+                    <input style="width:100%; margin-top:20px; border-radius: 10px 10px 0 0;" name="username" type="text" placeholder="Ваше имя" required="required" class="border-2 p-3 text-xl">
+                    <br>
+                    <input style="width:100%;" name="email" type="text" placeholder="Ваша электронная почта" required="required" class="border-2 p-3 text-xl">
+                    <br>
+                    <input style="width:100%; border-radius: 0 0 10px 10px;" name="password" type="password" placeholder="Придумайте пароль" required="required" class="border-2 p-3 text-xl">
+                    <br>
+                    <input style="width:100%; background:#3E5F8A; margin-top:10px; border-radius: 10px; color:white" type="submit" value="Зарегистрироваться" class="text-2xl bg-gray-300 p-3">
+                </form>
+            </div>
+        </div>
+
+        <script>
+            const form = document.getElementById('form');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetch('http://127.0.0.1:8000/pages/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username:formData.get("username"),
+                        email:formData.get("email"),
+                        password:formData.get("password")
+                    }),
+                    headers: {
+                        'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => console.log(data))
+                .catch(err => console.log(err));
+            })
+        </script>
+    </div>
+</body>
+</html>
+
