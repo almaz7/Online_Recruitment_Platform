@@ -13,6 +13,9 @@
         <ul class="flex ml-10">
             <li><font color="red">Online Recruitment Platform</font></li>
         </ul>
+        <ul class="flex gap-5 mr-10">
+            <li><a href="http://127.0.0.1:8000/pages/register" style="color:red">Регистрация</a></li>
+       </ul>
     </nav>
     <hr>
     <div id="content">
@@ -23,6 +26,9 @@
                     <br>
                     <input style="border-radius: 0 0 10px 10px;" name="password" type="password" placeholder="Пароль" required="required" class="border-2 p-3 text-xl">
                     <br>
+                    <div class="text-lg" style="color:red; max-width:30em;" id="wrong_email_or_password">
+
+                    </div>
                     <button style="width:100%; background:#3E5F8A; margin-top:10px; border-radius: 10px;" type="submit" class="text-2xl bg-gray-300 p-3">
                         <font color="white">Войти</font>
                     </button>
@@ -45,9 +51,31 @@
                     method: 'POST',
                     body: payload,
                 })
-                .then(res => res.json())
-                .then(data => console.log(data))
-                .catch(err =>  console.log(err));
+                .then(function(response) {
+                    // Стоит проверить код ответа
+                    // if (!response.ok) {
+                    //     // Сервер вернул код ответа за границами диапазона [200, 299]
+                    //     return Promise.reject(new Error(
+                    //         'Response failed: ' + response.status + ' (' + response.statusText + ')'
+                    //     ));
+                    // }
+                    if (response.ok) {
+                        window.location.href = "http://127.0.0.1:8000/pages/test_results";
+                    }
+                    return response.json();
+
+                }).then(function(data) {
+                    document.getElementById('wrong_email_or_password').innerHTML = '';
+                    if ("detail" in data) {
+                        if (data.detail == 'LOGIN_BAD_CREDENTIALS') {
+                            //неверный email или пароль
+                            var wrong_email_or_password = document.getElementById('wrong_email_or_password');
+                            wrong_email_or_password.innerHTML = `<p>Неверное имя пользователя или пароль.</p>`
+                        }
+                    }
+                }).catch(function(error) {
+                    console.error(error);
+                });
             })
         </script>
     </div>
