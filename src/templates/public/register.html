@@ -26,9 +26,18 @@
                     <br>
                     <input style="width:100%;" name="email" type="text" placeholder="Ваша электронная почта" required="required" class="border-2 p-3 text-xl">
                     <br>
+                    <div class="text-lg" style="color:red; max-width:30em;" id="wrong_email">
+
+                    </div>
                     <input style="width:100%; border-radius: 0 0 10px 10px;" name="password" type="password" placeholder="Придумайте пароль" required="required" class="border-2 p-3 text-xl">
                     <br>
+                    <div class="text-lg" style="color:red; max-width:30em;" id="wrong_password">
+
+                    </div>
                     <input style="width:100%; background:#3E5F8A; margin-top:10px; border-radius: 10px; color:white" type="submit" value="Зарегистрироваться" class="text-2xl bg-gray-300 p-3">
+                    <div class="text-3xl" style="color:white;" id="results">
+
+                    </div>
                 </form>
             </div>
         </div>
@@ -38,6 +47,7 @@
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const formData = new FormData(form);
                 fetch('http://127.0.0.1:8000/pages/register', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -46,13 +56,50 @@
                         password:formData.get("password")
                     }),
                     headers: {
-                        'Accept': 'application/json, text/plain, */*',
-                        'Content-Type': 'application/json'
+                        // 'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json; charset=UTF-8'
                     }
-                })
-                .then(res => res.json())
-                .then(data => console.log(data))
-                .catch(err => console.log(err));
+                }).then(function(response) {
+                    // Стоит проверить код ответа
+                    console.log(response);
+                    console.log(response.body);
+                    // if (!response.ok) {
+                    //     // Сервер вернул код ответа за границами диапазона [200, 299]
+                    //     return Promise.reject(new Error(
+                    //         'Response failed: ' + response.status + ' (' + response.statusText + ')'
+                    //     ));
+                    // }
+
+                    return response.json();
+                }).then(function(data) {
+                    // console.log(jSonCom(data.detail, {"code": 'REGISTER_INVALID_PASSWORD', "reason": 'Password should have UPPER and LOWER symbols'}));
+                    // console.log(data);
+                    document.getElementById('wrong_password').innerHTML = '';
+                    document.getElementById('wrong_email').innerHTML = '';
+                    document.getElementById('results').innerHTML = '';
+                    if ("detail" in data) {
+                        if (data.detail instanceof Object && "code" in data.detail) {
+                            if (data.detail.code == 'REGISTER_INVALID_PASSWORD') {
+                                //неверный пароль
+                                var wrong_password = document.getElementById('wrong_password');
+                                wrong_password.innerHTML = `<p>Пароль должен иметь как минимум одну строчную и одну прописную букву</p>`
+                            }
+                        }
+                        if (data.detail == 'REGISTER_USER_ALREADY_EXISTS') {
+                            //неверный email
+                            var wrong_email = document.getElementById('wrong_email');
+                            wrong_email.innerHTML = `<p>Пользователь с такой электронной почтой уже существует</p>`
+                        }
+                    } else {
+                        // if (data.detail == {"code": "REGISTER_INVALID_PASSWORD", "reason": "Password should have UPPER and LOWER symbols"}) {
+                        //     console.log('Пароль неверный');
+                        // }
+                        var results = document.getElementById('results');
+                        results.innerHTML = `<p>${data.username}, поздравляем! Вы успешно зарегистрированы!</p>`
+                    }
+                }).catch(function(error) {
+                    console.error(error);
+                });
             })
         </script>
     </div>
