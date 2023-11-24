@@ -16,13 +16,27 @@
         </ul>
         <ul class="flex gap-5 mr-10">
              <li><font color="red">Мой аккаунт</font></li>
-             <li><font color="red">Выйти</font></li>
+             <li><button type="button" onclick="logout()" style="color:red;">Выйти</button></li>
         </ul>
     </nav>
     <hr>
     <div id="content">
         {% block content %}{% endblock %}
     </div>
+    <script>
+        const logout = () => {
+            fetch('http://127.0.0.1:8000/pages/logout', {
+                method: 'POST'
+            }).then(function(response) {
+                if (response.ok) {
+                    window.location.replace("http://127.0.0.1:8000/pages/login");
+                }
+                return response.json();
+            }).catch(function(error) {
+                console.error(error);
+            });
+        }
+    </script>
 </body>
 </html>
 

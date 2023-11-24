@@ -8,7 +8,7 @@ from auth.base_config import current_user
 from tests_of_candidates.router import router as router_test_candidates
 from pages.router import router as pages_router
 
-#from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse
 
 
 from fastapi import Depends
@@ -38,5 +38,10 @@ def unprotected_route():
 templates = Jinja2Templates(directory="templates/public")
 
 @app.exception_handler(404)
-async def custom_404_handler(request, __):
+async def custom_404_handler(request, __):  #not_found
     return templates.TemplateResponse("404.html", {"request": request})
+
+
+@app.exception_handler(401)
+async def custom_401_handler(request, __): #unauthorized
+    return RedirectResponse("http://127.0.0.1:8000/pages/login")

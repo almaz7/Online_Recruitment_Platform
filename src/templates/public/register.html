@@ -13,6 +13,9 @@
         <ul class="flex ml-10">
             <li><font color="red">Online Recruitment Platform</font></li>
         </ul>
+        <ul class="flex gap-5 mr-10">
+            <li><a href="http://127.0.0.1:8000/pages/login" style="color:red">Войти</a></li>
+        </ul>
     </nav>
     <hr>
     <div id="content">
@@ -60,18 +63,8 @@
                         'Content-Type': 'application/json; charset=UTF-8'
                     }
                 }).then(function(response) {
-                    // Стоит проверить код ответа
-                    // if (!response.ok) {
-                    //     // Сервер вернул код ответа за границами диапазона [200, 299]
-                    //     return Promise.reject(new Error(
-                    //         'Response failed: ' + response.status + ' (' + response.statusText + ')'
-                    //     ));
-                    // }
-
                     return response.json();
                 }).then(function(data) {
-                    // console.log(jSonCom(data.detail, {"code": 'REGISTER_INVALID_PASSWORD', "reason": 'Password should have UPPER and LOWER symbols'}));
-                    // console.log(data);
                     document.getElementById('wrong_password').innerHTML = '';
                     document.getElementById('wrong_email').innerHTML = '';
                     document.getElementById('results').innerHTML = '';
@@ -89,9 +82,6 @@
                             wrong_email.innerHTML = `<p>Пользователь с такой электронной почтой уже существует</p>`
                         }
                     } else {
-                        // if (data.detail == {"code": "REGISTER_INVALID_PASSWORD", "reason": "Password should have UPPER and LOWER symbols"}) {
-                        //     console.log('Пароль неверный');
-                        // }
                         var results = document.getElementById('results');
                         results.innerHTML = `<p>${data.username}, поздравляем! Вы успешно зарегистрированы!
                             Теперь вы можете войти в свою учетную запись</p>`
