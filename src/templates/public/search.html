@@ -30,11 +30,11 @@
         <div class="flex rounded-3 border-2 p-3 mt-5">
             <img width="150" src="{{ url_for('static', path='stocks_1.png') }}" alt="Стонкс" class="mr-5">
             <div class="flex flex-col">
-                <span class="text-2xl font-bold">{{ result.result_type }}</span>
-                <span class="text-lg">ID результата теста: {{ result.id }}</span>
-                <span class="text-lg">ID пользователя: {{ result.user_id }}</span>
-                <span class="text-lg">Дата прохождения теста: {{ result.date }}</span>
-                <span class="text-lg">Количество баллов: {{ result.result }}</span>
+                <span class="text-2xl font-bold">{{ result["result_type"] }}</span>
+                <span class="text-lg">ID результата теста: {{ result["id"] }}</span>
+                <span class="text-lg">ID пользователя: {{ result["user_id"] }}</span>
+                <span class="text-lg">Дата прохождения теста: {{ result["date"] }}</span>
+                <span class="text-lg">Количество баллов: {{ result["result"] }}</span>
             </div>
         </div>
     {% endfor %}
