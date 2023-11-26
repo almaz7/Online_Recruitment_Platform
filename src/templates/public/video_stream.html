@@ -31,82 +31,82 @@
         let downloadButton = document.getElementById("downloadButton");
         let logElement = document.getElementById("log");
     
-        let recordingTimeMS = 60000;
+        let recordingTimeMS = 6 * 1000;
     
         function log(msg) {
-        logElement.innerHTML += `${msg}\n`;
+            logElement.innerHTML += `${msg}\n`;
         }
     
         function wait(delayInMS) {
-        return new Promise((resolve) => setTimeout(resolve, delayInMS));
+            return new Promise((resolve) => setTimeout(resolve, delayInMS));
         }
     
         function startRecording(stream, lengthInMS) {
-        let recorder = new MediaRecorder(stream);
-        let data = [];
-    
-        recorder.ondataavailable = (event) => data.push(event.data);
-        recorder.start();
-        log(`${recorder.state} for ${lengthInMS / 1000} seconds…`);
-    
-        let stopped = new Promise((resolve, reject) => {
-            recorder.onstop = resolve;
-            recorder.onerror = (event) => reject(event.name);
-        });
-    
-        let recorded = wait(lengthInMS).then(() => {
-            if (recorder.state === "recording") {
-            recorder.stop();
-            }
-        });
-    
-        return Promise.all([stopped, recorded]).then(() => data);
+            let recorder = new MediaRecorder(stream);
+            let data = [];
+        
+            recorder.ondataavailable = (event) => data.push(event.data);
+            recorder.start();
+            log(`${recorder.state} for ${lengthInMS / 1000} seconds…`);
+        
+            let stopped = new Promise((resolve, reject) => {
+                recorder.onstop = resolve;
+                recorder.onerror = (event) => reject(event.name);
+            });
+        
+            let recorded = wait(lengthInMS).then(() => {
+                if (recorder.state === "recording") {
+                    recorder.stop();
+                }
+            });
+        
+            return Promise.all([stopped, recorded]).then(() => data);
         }
     
         function stop(stream) {
-        stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         }
     
         startButton.addEventListener(
-        "click",
-        () => {
-            navigator.mediaDevices
-            .getUserMedia({
-                video: true,
-                audio: true,
-            })
-            .then((stream) => {
-                preview.srcObject = stream;
-                downloadButton.href = stream;
-                preview.captureStream = preview.captureStream || preview.mozCaptureStream;
-                return new Promise((resolve) => (preview.onplaying = resolve));
-            })
-            .then(() => startRecording(preview.captureStream(), recordingTimeMS))
-            .then((recordedChunks) => {
-                let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
-                recording.src = URL.createObjectURL(recordedBlob);
-                downloadButton.href = recording.src;
-                downloadButton.download = "RecordedVideo.webm";
-    
-                log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
-            })
-            .catch((error) => {
-                if (error.name === "NotFoundError") {
-                    log("Camera or microphone not found. Can't record.");
-                } else {
-                    log(error);
-                }
-            });
-        },
-        false,
+            "click",
+            () => {
+                navigator.mediaDevices
+                .getUserMedia({
+                    video: true,
+                    audio: true,
+                })
+                .then((stream) => {
+                    preview.srcObject = stream;
+                    downloadButton.href = stream;
+                    preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+                    return new Promise((resolve) => (preview.onplaying = resolve));
+                })
+                .then(() => startRecording(preview.captureStream(), recordingTimeMS))
+                .then((recordedChunks) => {
+                    let recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+                    recording.src = URL.createObjectURL(recordedBlob);
+                    downloadButton.href = recording.src;
+                    downloadButton.download = "RecordedVideo.mp4";
+        
+                    log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
+                })
+                .catch((error) => {
+                    if (error.name === "NotFoundError") {
+                        log("Camera or microphone not found. Can't record.");
+                    } else {
+                        log(error);
+                    }
+                });
+            },
+            false,
         );
     
         stopButton.addEventListener(
-        "click",
-        () => {
-            stop(preview.srcObject);
-        },
-        false,
+            "click",
+            () => {
+                stop(preview.srcObject);
+            },
+            false,
         );
     </script>
 </div>

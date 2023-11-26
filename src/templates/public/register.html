@@ -31,19 +31,19 @@
                     <br>
                     <input style="width:100%;" name="email" type="text" placeholder="Ваша электронная почта" required="required" class="border-2 p-3 text-xl">
                     <br>
-                    <div class="text-lg" style="color:red; max-width:30em;" id="wrong_email">
+                    <div class="text-lg" style="color:red;  text-align: center;" id="wrong_email">
 
                     </div>
                     <input style="width:100%; border-radius: 0 0 10px 10px;" name="password" type="password" placeholder="Придумайте пароль" required="required" class="border-2 p-3 text-xl">
                     <br>
-                    <div class="text-lg" style="color:red; max-width:30em;" id="wrong_password">
+                    <div class="text-lg" style="color:red; text-align: center;" id="wrong_password">
 
                     </div>
                     <input style="width:100%; background:#3E5F8A; margin-top:10px; border-radius: 10px; color:white" type="submit" value="Зарегистрироваться" class="text-2xl bg-gray-300 p-3">
-                    <div class="text-3xl" style="color:white;" id="results">
-
-                    </div>
                 </form>
+                <div class="text-3xl" style="color:white; text-align: center;" id="results">
+
+                </div>
             </div>
         </div>
 
@@ -75,17 +75,18 @@
                             if (data.detail.code == 'REGISTER_INVALID_PASSWORD') {
                                 //неверный пароль
                                 var wrong_password = document.getElementById('wrong_password');
-                                wrong_password.innerHTML = `<p>Пароль должен иметь как минимум одну строчную и одну прописную букву</p>`
+                                wrong_password.innerHTML = `<p>Пароль должен иметь как минимум<br>одну строчную и одну прописную букву</p>`
                             }
                         }
                         if (data.detail == 'REGISTER_USER_ALREADY_EXISTS') {
                             //неверный email
                             var wrong_email = document.getElementById('wrong_email');
-                            wrong_email.innerHTML = `<p>Пользователь с такой электронной почтой уже существует</p>`
+                            wrong_email.innerHTML = `<p>Пользователь с такой<br>электронной почтой уже существует</p>`
                         }
                     } else {
                         var results = document.getElementById('results');
-                        results.innerHTML = `<p>${data.username}, поздравляем! Вы успешно зарегистрированы!
+                        document.getElementById('form').innerHTML = '';
+                        results.innerHTML = `<p>${data.username}, поздравляем!<br>Вы успешно зарегистрированы!<br>
                             Теперь вы можете войти в свою учетную запись</p>`
                     }
                 }).catch(function(error) {
