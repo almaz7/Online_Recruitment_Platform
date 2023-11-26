@@ -45,7 +45,7 @@ async def get_search_page(request: Request, results=Depends(get_candidate_test_r
     return templates.TemplateResponse("search.html", {"request": request, "results": results["data"]})
 
 
-@router.get("/capture_video")
+@router.get("/video_interview")
 async def get_user_video(request: Request):
     return templates.TemplateResponse("video_stream.html", {"request": request})
 

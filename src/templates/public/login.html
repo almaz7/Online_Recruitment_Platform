@@ -52,13 +52,6 @@
                     body: payload,
                 })
                 .then(function(response) {
-                    // Стоит проверить код ответа
-                    // if (!response.ok) {
-                    //     // Сервер вернул код ответа за границами диапазона [200, 299]
-                    //     return Promise.reject(new Error(
-                    //         'Response failed: ' + response.status + ' (' + response.statusText + ')'
-                    //     ));
-                    // }
                     if (response.ok) {
                         window.location.href = "http://127.0.0.1:8000/pages/test_results";
                     }

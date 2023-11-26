@@ -6,17 +6,22 @@
 
 {% block content %}
 <div class="flex justify-center flex-col items-center" style="color: white;">
+    <div class="text-xl" style="color:white; text-align: center; margin-top: 10px" id="start_or_stop_description">
+        После нажатия на кнопку "Начать запись"<br>начнется запись аудио и видео с камеры Вашего устройства   
+    </div>
     <div>
-        <div id="startButton" class="button">Start Recording</div>
-        <h2>Preview</h2>
+        <div id="startButton">
+            <div style="margin-top: 10px; margin-bottom: 5px;" class="button">Начать запись</div>
+        </div>
+        <div id="stopButton">
+            
+        </div>
         <video id="preview" width="500" height="400" autoplay muted></video>
+        
     </div>
 
-    <div>
-        <div id="stopButton" class="button">Stop Recording</div>
-        <h2>Recording</h2>
-        <video id="recording" width="500" height="400" controls></video>
-        <a id="downloadButton" class="button">Download</a>
+    <div style="margin-top: 10px" id="to_download">
+        
     </div>
 
     <div class="bottom">
@@ -25,16 +30,16 @@
 
     <script>
         let preview = document.getElementById("preview");
-        let recording = document.getElementById("recording");
         let startButton = document.getElementById("startButton");
         let stopButton = document.getElementById("stopButton");
-        let downloadButton = document.getElementById("downloadButton");
         let logElement = document.getElementById("log");
-    
-        let recordingTimeMS = 6 * 1000;
+        let to_download = document.getElementById("to_download");
+        let start_or_stop_description = document.getElementById("start_or_stop_description");
+        let recordingTimeMS = 5 * 1000;
     
         function log(msg) {
             logElement.innerHTML += `${msg}\n`;
+            console.log(msg);
         }
     
         function wait(delayInMS) {
@@ -42,11 +47,15 @@
         }
     
         function startRecording(stream, lengthInMS) {
+            to_download.innerHTML = '';
             let recorder = new MediaRecorder(stream);
             let data = [];
-        
+            
             recorder.ondataavailable = (event) => data.push(event.data);
             recorder.start();
+            startButton.innerHTML = '';
+            start_or_stop_description.innerHTML = 'Для завершения записи до конца таймера<br>можете нажать на "Остановить запись до конца таймера"';
+            stopButton.innerHTML = '<div style="margin-top: 10px; margin-bottom: 5px;" class="button">Остановить запись до конца таймера</div>';
             log(`${recorder.state} for ${lengthInMS / 1000} seconds…`);
         
             let stopped = new Promise((resolve, reject) => {
@@ -77,18 +86,26 @@
                 })
                 .then((stream) => {
                     preview.srcObject = stream;
-                    downloadButton.href = stream;
                     preview.captureStream = preview.captureStream || preview.mozCaptureStream;
                     return new Promise((resolve) => (preview.onplaying = resolve));
                 })
                 .then(() => startRecording(preview.captureStream(), recordingTimeMS))
                 .then((recordedChunks) => {
                     let recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+                    to_download.innerHTML = '<h2>Полученная запись</h2>' + 
+                        '<video id="recording" width="500" height="400" controls></video>' +
+                        '<a id="downloadButton" class="button" style="margin-top: 10px">Скачать видео</a>';
+                    let recording = document.getElementById("recording");
+                    let downloadButton = document.getElementById("downloadButton");
                     recording.src = URL.createObjectURL(recordedBlob);
                     downloadButton.href = recording.src;
+                    log("src = " + recording.src);
                     downloadButton.download = "RecordedVideo.mp4";
-        
+                    startButton.innerHTML = '<div style="margin-top: 10px; margin-bottom: 5px;" class="button">Начать запись</div>';
+                    stopButton.innerHTML = '';
+                    start_or_stop_description.innerHTML = 'После нажатия на кнопку "Начать запись"<br>начнется запись аудио и видео с камеры Вашего устройства';
                     log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
+                    stop(preview.srcObject);
                 })
                 .catch((error) => {
                     if (error.name === "NotFoundError") {
