@@ -4,3 +4,4 @@ test_documents
 venv
 .idea
 src/static
+/src/video_records

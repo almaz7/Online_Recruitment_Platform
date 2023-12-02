@@ -25,7 +25,11 @@
     </div>
 
     <div class="bottom">
-        <pre id="log"></pre>
+        <pre id="no_camera_or_microphone"></pre>
+    </div>
+
+    <div class="bottom">
+        <pre id="seconds"></pre>
     </div>
 
     <script>
@@ -35,18 +39,32 @@
         let logElement = document.getElementById("log");
         let to_download = document.getElementById("to_download");
         let start_or_stop_description = document.getElementById("start_or_stop_description");
-        let recordingTimeMS = 5 * 1000;
-    
+        let duration_sec = {{ duration }} + 1;
+        let recordingTimeMS = duration_sec * 1000;
+        let past_seconds = 0;
+        
+
         function log(msg) {
-            logElement.innerHTML += `${msg}\n`;
             console.log(msg);
         }
     
         function wait(delayInMS) {
             return new Promise((resolve) => setTimeout(resolve, delayInMS));
         }
-    
+        
         function startRecording(stream, lengthInMS) {
+            let timerId = null;
+            function updateCountdown() {
+                past_seconds += 1;
+                const diff = duration_sec - past_seconds;
+                if (diff <= 0) {
+                    clearInterval(timerId);
+                }
+                document.getElementById('seconds').innerText = `Осталось секунд: ${diff}`;
+            }
+            // Обновляем счетчик каждую секунду
+            timerId = setInterval(updateCountdown, 1000);
+
             to_download.innerHTML = '';
             let recorder = new MediaRecorder(stream);
             let data = [];
@@ -98,6 +116,37 @@
                     let recording = document.getElementById("recording");
                     let downloadButton = document.getElementById("downloadButton");
                     recording.src = URL.createObjectURL(recordedBlob);
+
+                    recordedBlob.lastModifiedDate = new Date();
+                    recordedBlob.name = "blob_video.mp4";
+
+                    var body_data = new FormData()
+                    body_data.append('file', recordedBlob);
+                    post_url = new URL('http://127.0.0.1:8000/video_candidate/add_video');
+                    post_url.searchParams.set("question_id", 1);
+                    fetch(post_url, {
+                        method: 'POST',
+                        body: body_data
+                    }).then(function(response) {
+                        // if (response.ok) {
+                        //     window.location.href = "http://127.0.0.1:8000/pages/test_results";
+                        // }
+                        return response.json();
+
+                    }).then(function(data) {
+                        // document.getElementById('wrong_email_or_password').innerHTML = '';
+                        // if ("detail" in data) {
+                        //     if (data.detail == 'LOGIN_BAD_CREDENTIALS') {
+                        //         //неверный email или пароль
+                        //         var wrong_email_or_password = document.getElementById('wrong_email_or_password');
+                        //         wrong_email_or_password.innerHTML = `<p>Неверное имя пользователя<br>или пароль</p>`
+                        //     }
+                        // }
+                        console.log(data);
+                    }).catch(function(error) {
+                        console.error(error);
+                    });
+
                     downloadButton.href = recording.src;
                     log("src = " + recording.src);
                     downloadButton.download = "RecordedVideo.mp4";
@@ -106,10 +155,12 @@
                     start_or_stop_description.innerHTML = 'После нажатия на кнопку "Начать запись"<br>начнется запись аудио и видео с камеры Вашего устройства';
                     log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
                     stop(preview.srcObject);
+                    document.getElementById('seconds').innerHTML = '';
                 })
                 .catch((error) => {
                     if (error.name === "NotFoundError") {
-                        log("Camera or microphone not found. Can't record.");
+                        log("Запись невозможна: камера или микрофон не обнаружены");
+                        document.getElementById('no_camera_or_microphone').innerText = "Запись невозможна: камера или микрофон не обнаружены";
                     } else {
                         log(error);
                     }

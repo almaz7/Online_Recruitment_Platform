@@ -4,6 +4,8 @@ from fastapi.templating import Jinja2Templates
 from tests_of_candidates.router import get_candidate_test_result_by_type
 from auth.base_config import auth_backend, fastapi_users
 from auth.schemas import UserRead, UserCreate
+from auth.models import User
+from auth.base_config import current_user
 
 router = APIRouter(
     prefix="/pages",
@@ -46,6 +48,6 @@ async def get_search_page(request: Request, results=Depends(get_candidate_test_r
 
 
 @router.get("/video_interview")
-async def get_user_video(request: Request):
-    return templates.TemplateResponse("video_stream.html", {"request": request})
+async def get_user_video(request: Request, duration: int = 6, user: User = Depends(current_user)):
+    return templates.TemplateResponse("video_stream.html", {"request": request, "duration": duration})
 
