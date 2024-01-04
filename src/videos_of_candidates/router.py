@@ -52,7 +52,6 @@ async def add_candidate_video(question_id: int, file: UploadFile, user: User = D
         if not os.path.exists(f"video_records/{user.email}/{question_id}"):
             os.mkdir(f"video_records/{user.email}/{question_id}")
         time = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
-        print(time)
         path = f"video_records/{user.email}/{question_id}/{time}.mp4"
 
         async with aiofiles.open(path,"wb") as video_trg_file:

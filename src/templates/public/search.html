@@ -3,16 +3,11 @@
 {% block head %}
 <script>
     const search_for_test_result_by_type = () => {
-        const searchInputValue = document.getElementById("test_result_by_type_search").value;
-        if (searchInputValue.toUpperCase() == "МИША") {
-            window.location.href = "https://vk.com/flamesky";
-        } else if (searchInputValue.toUpperCase() == "АЛМАЗ") {
-            window.location.href = "https://vk.com/sokol_metkiy";
-        } else {
-            const parser = new URL(window.location);
-            parser.searchParams.set("result_type", searchInputValue);
-            window.location = parser.href;
-        }
+        const searchInputValue = document.getElementById("test_result_by_test_id_search").value;
+        const parser = new URL(window.location);
+        parser.searchParams.set("test_id", searchInputValue);
+        window.location = parser.href;
+        
     }
 </script>
 {% endblock %}
@@ -20,18 +15,18 @@
 {% block content %}
 <div class="flex justify-center flex-col items-center" style="color:white;">
     <div class="flex my-3 gap-5">
-        <input style="color:black;" id="test_result_by_type_search" type="text" placeholder="Тип результата теста" class="text-xl p-3">
+        <input style="color:black;" id="test_result_by_test_id_search" type="text" placeholder="ID теста" class="text-xl p-3">
         <button onclick="search_for_test_result_by_type()" type="button" style="background:#3E5F8A;" class="rounded-3xl p-3">
-            <font size="4px">Поиск по результатам теста</font>
+            <font size="4px">Поиск результата теста по id</font>
         </button>
     </div>
-    <span>Например, AIZENKA, ELERSA</span>
+    <span>Например, 1 (AIZENKA), 2 (ELERSA)</span>
     {% for result in results %}
         <div class="flex rounded-3 border-2 p-3 mt-5">
             <img width="150" src="{{ url_for('static', path='stocks_1.png') }}" alt="Стонкс" class="mr-5">
             <div class="flex flex-col">
-                <span class="text-2xl font-bold">{{ result["result_type"] }}</span>
-                <span class="text-lg">ID результата теста: {{ result["id"] }}</span>
+                <span class="text-2xl font-bold">ID результата: {{ result["id"] }}</span>
+                <span class="text-lg">ID теста: {{ result["test_id"] }}</span>
                 <span class="text-lg">ID пользователя: {{ result["user_id"] }}</span>
                 <span class="text-lg">Дата прохождения теста: {{ result["date"] }}</span>
                 <span class="text-lg">Количество баллов: {{ result["result"] }}</span>

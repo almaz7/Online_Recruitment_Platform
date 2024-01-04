@@ -41,7 +41,7 @@
         let start_or_stop_description = document.getElementById("start_or_stop_description");
         let duration_sec = {{ duration }} + 1;
         let recordingTimeMS = duration_sec * 1000;
-        let past_seconds = 0;
+        
         
 
         function log(msg) {
@@ -53,6 +53,7 @@
         }
         
         function startRecording(stream, lengthInMS) {
+            let past_seconds = 0;
             let timerId = null;
             function updateCountdown() {
                 past_seconds += 1;
@@ -60,7 +61,7 @@
                 if (diff <= 0) {
                     clearInterval(timerId);
                 }
-                document.getElementById('seconds').innerText = `Осталось секунд: ${diff}`;
+                document.getElementById('seconds').innerHTML = `Осталось секунд: ${diff}`;
             }
             // Обновляем счетчик каждую секунду
             timerId = setInterval(updateCountdown, 1000);
@@ -160,7 +161,7 @@
                 .catch((error) => {
                     if (error.name === "NotFoundError") {
                         log("Запись невозможна: камера или микрофон не обнаружены");
-                        document.getElementById('no_camera_or_microphone').innerText = "Запись невозможна: камера или микрофон не обнаружены";
+                        document.getElementById('no_camera_or_microphone').innerHTML = "Запись невозможна: камера или микрофон не обнаружены";
                     } else {
                         log(error);
                     }

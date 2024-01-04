@@ -3,13 +3,13 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class Test_Candidate_Create(BaseModel):
-    result_type: str
+class Test_Result_Create(BaseModel):
+    test_id: int
     result: int
 
-class Test_Candidate_Get(BaseModel):
+class Test_Result_Get(BaseModel):
     id: int
+    test_id: int
     user_id: int
-    result_type: str
     date: datetime
     result: int

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.templating import Jinja2Templates
 
-from tests_of_candidates.router import get_candidate_test_result_by_type
+from tests_of_candidates.router import get_candidate_test_result_by_test_id
 from auth.base_config import auth_backend, fastapi_users
 from auth.schemas import UserRead, UserCreate
 from auth.models import User
@@ -43,7 +43,7 @@ router.include_router(
 
 
 @router.get("/test_results/")
-async def get_search_page(request: Request, results=Depends(get_candidate_test_result_by_type)):
+async def get_search_page(request: Request, results=Depends(get_candidate_test_result_by_test_id)):
     return templates.TemplateResponse("search.html", {"request": request, "results": results["data"]})
 
 
