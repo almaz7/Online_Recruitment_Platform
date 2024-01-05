@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, HTTPException, status
-from sqlalchemy import select, insert, and_
+from sqlalchemy import select, insert, and_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import FileResponse
 
@@ -10,7 +10,7 @@ from auth.models import User
 from auth.base_config import current_user
 from database import get_async_session
 
-from tests_of_candidates.models import test_result
+from tests_of_candidates.models import test_result, test
 from tests_of_candidates.schemas import Test_Result_Create
 
 router = APIRouter(
@@ -20,15 +20,27 @@ router = APIRouter(
 
 
 @router.get("/result/")
-async def get_candidate_test_result_by_test_id(test_id: int = 1, user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
-    query = (
-        select(test_result).
-        where(and_(test_result.c.test_id == test_id,
-                   test_result.c.user_id == user.id)).order_by(test_result.c.date).limit(1)
-    )
-    print(query)
-    q_result = await session.execute(query)
-    result = [dict(r._mapping) for r in q_result]
+async def get_candidate_test_result_by_test_name(test_name: str = 'AIZENKA', user: User = Depends(current_user), session: AsyncSession = Depends(get_async_session)):
+    # query = (
+    #     select(test_result).
+    #     where(and_(test_result.c.test_id == test_id,
+    #                test_result.c.user_id == user.id)).order_by(test_result.c.date).limit(1)
+    # )
+    # q_result = await session.execute(query)
+    q_result = await session.execute(text(f"SELECT * FROM test_result tr JOIN test t ON t.id = tr.test_id WHERE t.test_name='{test_name}'"))
+    result = []
+    for r in q_result:
+        d = {}
+        d["id"] = r[0]
+        d["test_id"] = r[1]
+        d["user_id"] = r[2]
+        d["date"] = r[3]
+        d["result"] = r[4]
+        d["desc"] = r[5]
+        d["test_name"] = r[7]
+        result.append(d)
+
+    # result = [dict(r._mapping) for r in q_result]
     return {
         "status": "success",
         "data": result,
