@@ -69,60 +69,58 @@
             </div>
         </form>
 
-    {% endif %}
+        <script>
+            const form = document.getElementById('test-form');
 
-    <script>
-        const form = document.getElementById('test-form');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            var option; //for checking: are there any unanswered fields?
-            var status = true;
-            {% for result in results %}
-            option=document.getElementsByName('{{ result["question_id"] }}');
-            
-            if (!(option[0].checked || option[1].checked)) {
-                document.getElementById('question{{ result["question_id"] }}').innerHTML = "Ответьте на вопрос";
-                status = false;
-            } else {
-                document.getElementById('question{{ result["question_id"] }}').innerHTML = "";
-            }
-            {% endfor %}
-
-            if (!status) {
-                document.getElementById('wrong_submit').innerHTML = "Ответьте на все вопросы";
-                return false;
-            } else {
-                document.getElementById('wrong_submit').innerHTML = "";
-            }
-
-            fetch('http://127.0.0.1:8000/test_candidate/test', {
-                method: 'POST',
-                body: JSON.stringify({
-                    test_id: {{ results[0]["test_id"] }},
-                    user_id: {{ results[0]["user_id"] }},
-                    test_name: "{{ results[0]["test_name"] }}",
-                    {% for result in results %}
-                    {{ result["question_id"] }}: formData.get("{{ result["question_id"] }}"),
-                    {% endfor %}
-                }),
-                headers: {
-                    // 'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
-            }).then(function(response) {
-                if (response.ok) {
-                    window.location.href = "http://127.0.0.1:8000/pages/test_results";
-                }
-                return response.json();
-            }).then(function(data) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                var option; //for checking: are there any unanswered fields?
+                var status = true;
+                {% for result in results %}
+                option=document.getElementsByName('{{ result["question_id"] }}');
                 
-            }).catch(function(error) {
-                console.error(error);
-            });
-        })
-    </script>
+                if (!(option[0].checked || option[1].checked)) {
+                    document.getElementById('question{{ result["question_id"] }}').innerHTML = "Ответьте на вопрос";
+                    status = false;
+                } else {
+                    document.getElementById('question{{ result["question_id"] }}').innerHTML = "";
+                }
+                {% endfor %}
 
+                if (!status) {
+                    document.getElementById('wrong_submit').innerHTML = "Ответьте на все вопросы";
+                    return false;
+                } else {
+                    document.getElementById('wrong_submit').innerHTML = "";
+                }
+
+                fetch('http://127.0.0.1:8000/test_candidate/test', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        test_id: {{ results[0]["test_id"] }},
+                        user_id: {{ results[0]["user_id"] }},
+                        test_name: "{{ results[0]["test_name"] }}",
+                        {% for result in results %}
+                        {{ result["question_id"] }}: formData.get("{{ result["question_id"] }}"),
+                        {% endfor %}
+                    }),
+                    headers: {
+                        // 'Accept': 'application/json, text/plain, */*',
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    }
+                }).then(function(response) {
+                    if (response.ok) {
+                        window.location.href = "http://127.0.0.1:8000/pages/test_results";
+                    }
+                    return response.json();
+                }).then(function(data) {
+                    
+                }).catch(function(error) {
+                    console.error(error);
+                });
+            })
+        </script>
+    {% endif %}
 </div>
 {% endblock %}
