@@ -22,10 +22,12 @@ test_answer = Table(
     "test_answer",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("answer_num", Integer, nullable=False),
     Column("test_id", Integer, ForeignKey("test.id"), nullable=False),
     Column("user_id", Integer, ForeignKey(User.id), nullable=False),
+    Column("question_id", Integer, ForeignKey("test_question.id"), nullable=False),
     Column("date", TIMESTAMP,  default=datetime.utcnow),
-    Column("question", String, nullable=False)
+    Column("answer", String, nullable=False)
 )
 
 test_result = Table(
@@ -36,5 +38,5 @@ test_result = Table(
     Column("user_id", Integer, ForeignKey(User.id), nullable=False),
     Column("date", TIMESTAMP,  default=datetime.utcnow),
     Column("result", Integer, nullable=False),
-    Column("desc", String)
+    Column("description", String)
 )

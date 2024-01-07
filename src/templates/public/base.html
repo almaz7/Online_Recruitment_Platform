@@ -23,6 +23,14 @@
     <div id="content">
         {% block content %}{% endblock %}
     </div>
+
+
+    <div class="flex ml-10 gap-5"  style="position: relative; width: 600px; height: 500px;">
+        <div style="position: absolute; bottom: 10px;">
+            <font color="white">© SOKOL_METKIY corporation</font>
+        </div>
+    </div>
+    
     <script>
         const logout = () => {
             fetch('http://127.0.0.1:8000/pages/logout', {

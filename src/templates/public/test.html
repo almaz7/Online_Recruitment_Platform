@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script>
+    const search_for_test = () => {
+        const searchInputValue = document.getElementById("test_search").value;
+        const parser = new URL(window.location);
+        parser.searchParams.set("test_name", searchInputValue);
+        window.location = parser.href;
+        
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="flex justify-center flex-col items-center" style="color:white;">
+    <div class="flex my-3 gap-5">
+        <input style="color:black;" id="test_search" type="text" placeholder="Название теста" class="text-xl p-3">
+        <button onclick="search_for_test()" type="button" style="background:#3E5F8A;" class="rounded-3xl p-3">
+            <font size="4px">Поиск теста</font>
+        </button>
+    </div>
+    <span>Например, AIZENKA, ELERSA</span>
+    {% if details|string == "no_data" %}
+        <br>
+        <div  style="font-size:50px ; color:red; text-align: center;">
+            Теста с названием {{ results }} нет
+        </div>
+    {% else %}
+        <br>
+        <div  style="font-size:50px ; color:whitesmoke; text-align: center;">
+            Тест {{ results[0]["test_name"] }}
+        </div>
+
+        <form id="test-form" class="flex">
+            <div style="font-size: 22px">
+                {% for result in results %}
+                    <br>
+                    <div class="question">
+                            <p>{{ result["question_num"] }}. {{ result["question"] }}</p>
+                            <div class="answers">
+                                <div style="color:red;" id="question{{ result["question_id"] }}">
+
+                                </div>
+
+                                <label>
+                                    <div class="flex ml-10 gap-5">
+                                        <input type="radio" name="{{ result["question_id"] }}" value="y">
+                                        Да
+                                    </div>
+                                </label>
+                                <label>
+                                    <div class="flex ml-10 gap-5">
+                                        <input type="radio" name="{{ result["question_id"] }}" value="n">
+                                        Нет
+                                    </div>
+                                </label>
+                            </div>
+                    </div>
+                {% endfor %}
+                <br>
+                
+                <div style="color:red;" id="wrong_submit">
+
+                </div>
+
+                <button type="submit" style="background:#3E5F8A;" class="rounded-3xl p-3">Отправить ответ</button>
+
+            </div>
+        </form>
+
+    {% endif %}
+
+    <script>
+        const form = document.getElementById('test-form');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            var option; //for checking: are there any unanswered fields?
+            var status = true;
+            {% for result in results %}
+            option=document.getElementsByName('{{ result["question_id"] }}');
+            
+            if (!(option[0].checked || option[1].checked)) {
+                document.getElementById('question{{ result["question_id"] }}').innerHTML = "Ответьте на вопрос";
+                status = false;
+            } else {
+                document.getElementById('question{{ result["question_id"] }}').innerHTML = "";
+            }
+            {% endfor %}
+
+            if (!status) {
+                document.getElementById('wrong_submit').innerHTML = "Ответьте на все вопросы";
+                return false;
+            } else {
+                document.getElementById('wrong_submit').innerHTML = "";
+            }
+
+            fetch('http://127.0.0.1:8000/test_candidate/test', {
+                method: 'POST',
+                body: JSON.stringify({
+                    test_id: {{ results[0]["test_id"] }},
+                    user_id: {{ results[0]["user_id"] }},
+                    test_name: "{{ results[0]["test_name"] }}",
+                    {% for result in results %}
+                    {{ result["question_id"] }}: formData.get("{{ result["question_id"] }}"),
+                    {% endfor %}
+                }),
+                headers: {
+                    // 'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            }).then(function(response) {
+                if (response.ok) {
+                    window.location.href = "http://127.0.0.1:8000/pages/test_results";
+                }
+                return response.json();
+            }).then(function(data) {
+                
+            }).catch(function(error) {
+                console.error(error);
+            });
+        })
+    </script>
+
+</div>
+{% endblock %}
