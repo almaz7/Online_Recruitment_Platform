@@ -27,18 +27,17 @@ async def get_candidate_test_result_by_test_name(test_name: str = 'AIZENKA', use
     #                test_result.c.user_id == user.id)).order_by(test_result.c.date).limit(1)
     # )
     # q_result = await session.execute(query)
-    q_result = await session.execute(text(f"SELECT tr.id, test_id, user_id, date, result, description, test_name "
-                                          f"FROM test_result tr JOIN test t ON t.id = tr.test_id WHERE t.test_name='{test_name}'"))
+    q_result = await session.execute(text(f"SELECT username, date, result, description, test_name "
+                                          f"FROM test_result tr JOIN test t ON t.id = tr.test_id "
+                                          f"JOIN \"user\" ON \"user\".id = tr.user_id WHERE t.test_name='{test_name}'"))
     result = []
     for r in q_result:
         d = {}
-        d["id"] = r[0]
-        d["test_id"] = r[1]
-        d["user_id"] = r[2]
-        d["date"] = r[3]
-        d["result"] = r[4]
-        d["description"] = r[5]
-        d["test_name"] = r[6]
+        d["username"] = r[0]
+        d["date"] = r[1]
+        d["result"] = r[2]
+        d["description"] = r[3]
+        d["test_name"] = r[4]
         result.append(d)
 
     # result = [dict(r._mapping) for r in q_result]
@@ -167,7 +166,7 @@ async def push_answers_on_test(request: Request, user: User = Depends(current_us
         await session.commit()
 
         stmt = (
-            insert(test_result).values(test_id=test_id, user_id=user_id, result=extraversion,
+            insert(test_result).values(test_id=test_id, user_id=user_id, result=lie,
                                        description='Шкала лжи')
         )
         await session.execute(stmt)
