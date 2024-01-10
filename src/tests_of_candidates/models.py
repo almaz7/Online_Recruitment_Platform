@@ -14,7 +14,7 @@ test_question = Table(
     "test_question",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("test_id", Integer, ForeignKey(User.id), nullable=False),
+    Column("test_id", Integer, ForeignKey("test.id"), nullable=False),
     Column("question", String, nullable=False)
 )
 
